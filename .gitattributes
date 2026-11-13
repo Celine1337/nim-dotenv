@@ -1,3 +1,0 @@
-# Keep the focus on the implementation language: build/test scripts are
-# scaffolding, not the project's primary language.
-*.sh linguist-detectable=false

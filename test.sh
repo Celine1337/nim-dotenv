@@ -111,6 +111,21 @@ check "no args exits 2" 2 "" "$rc" "$out"
 out=$(printf 'X=1\nX=2\n' | $BIN -); rc=$?
 check "stdin duplicate flagged" 1 'duplicate key "X"' "$rc" "$out"
 
+# CRLF line endings are handled like LF.
+printf 'A=1\r\nB=2\r\n' > "$TMP/crlf.env"
+out=$($BIN "$TMP/crlf.env"); rc=$?
+check "CRLF line endings clean" 0 "0 error(s), 0 warning(s)" "$rc" "$out"
+
+# A tab inside an unquoted value is whitespace -> WARN.
+printf 'A=hello\tworld\n' > "$TMP/tab.env"
+out=$($BIN "$TMP/tab.env"); rc=$?
+check "tab in value warns" 0 "WARN line 1" "$rc" "$out"
+
+# `export` followed by a tab is still stripped.
+printf 'export\tA=1\n' > "$TMP/exporttab.env"
+out=$($BIN "$TMP/exporttab.env"); rc=$?
+check "export with tab stripped" 0 "0 error(s), 0 warning(s)" "$rc" "$out"
+
 echo "----------------------------------------"
 echo "nim-dotenv: $pass passed, $fail failed"
 [ "$fail" -eq 0 ] && echo "ALL CHECKS PASSED" || exit 1

@@ -1,0 +1,4 @@
+bin/
+.nimcache/
+*.pyc
+__pycache__/
